@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>tooltip demo - all angles</title>
+	<script src="../asset/jquery.min.js"></script>
+	<script src="../src/jquery.tooltip.js"></script>
+	<style>
+
+		@charset "utf-8";
+		/** css Reset  **/
+		html, body, div, span, applet, object, iframe,
+		h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+		a, abbr, acronym, address, big, cite, code,
+		del, dfn, em, img, ins, kbd, q, s, samp,
+		small, strike, strong, sub, sup, tt, var,
+		b, u, i, center,
+		dl, dt, dd, ol, ul, li,
+		fieldset, form, label, legend,
+		table, caption, tbody, tfoot, thead, tr, th, td,
+		article, aside, canvas, details, embed, 
+		figure, figcaption, footer, header, hgroup, 
+		menu, nav, output, ruby, section, summary,
+		time, mark, audio, video {
+		    margin: 0;
+		    padding: 0;
+		    border: 0;
+		    outline: 0;
+		    font-size: 100%;
+		    vertical-align: baseline;
+		    background: transparent;
+		}
+		article, aside, details, figcaption, figure, 
+		footer, header, hgroup, menu, nav, section {
+		    display: block;
+		}
+
+		ol, ul {list-style: none;}
+		blockquote, q {quotes: none;}
+		blockquote:before, blockquote:after,q:before, q:after { content: '';content: none;}
+
+
+		table {border-collapse: collapse; border-spacing: 0;}
+
+		i,em,b {font-style: normal;}
+		del {text-decoration: line-through;}
+		img {vertical-align: top;}
+		sup{vertical-align:text-top}
+		sub{vertical-align:text-bottom}
+		fieldset,img,a img,iframe{border-width:0;border-style:none}
+		iframe{overflow:hidden}
+		input,select {vertical-align: middle;}
+		pre {white-space: pre; white-space: pre-wrap;white-space: pre-line;word-wrap: break-word;}
+		hr{display: block;height: 1px;border: 0;border-top: 1px solid #ccc;margin: 1em 0;padding: 0;}
+		abbr[title],dfn[title] {border-bottom: 1px dotted #000;cursor: help;}
+
+		/** end css Reset **/
+
+
+
+	.wrapper{width:960px;margin:0 auto;}
+	.box_ul  li{ float: left; width: 320px; height:200px; text-align: center; vertical-align: middle; line-height: 200px; }
+	.box_ul  li a { border:1px solid #ccc; text-decoration: none; }
+
+	.float_layer { width:100px; height: 40px; background:#ccc; position: absolute; color:#DB5D16; }
+
+
+
+
+	.tooltip { position: absolute;  z-index: 100; width:200px; height:100px;background: #FFFFFF; border: 3px solid #E6F1F6; }
+	.tooltip .arrow,.tooltip .arrow  .arrow_in{ background-color: transparent; border: 10px dashed transparent;  position: absolute; font-size: 0; width: 0;}
+	.tooltip .content { text-align: center; line-height: 100px; color: #ccc; }
+
+
+	/*.tooltip { left:200px; top:200px; }*/
+
+	/* top */
+	.tooltip.bottomRight .arrow {  border-bottom: 10px solid #E6F1F6; left: 20px; top: -23px;  }
+	.tooltip.bottomRight .arrow  .arrow_in{ border-bottom: 10px solid #fff; left: -10px; top: -6px; }
+
+	.tooltip.bottomCenter .arrow {  border-bottom: 10px solid #E6F1F6; margin-left: 50%; left: -10px;top: -23px;  }
+	.tooltip.bottomCenter .arrow  .arrow_in{ border-bottom: 10px solid #fff; left: -10px; top: -6px; }
+
+	.tooltip.bottomLeft .arrow {  border-bottom: 10px solid #E6F1F6; right:20px; top: -23px;  }
+	.tooltip.bottomLeft .arrow  .arrow_in{ border-bottom: 10px solid #fff; left: -10px; top: -6px; }
+
+
+	/* bottom */
+	.tooltip.topRight .arrow {  border-top: 10px solid #E6F1F6; left: 20px; bottom: -23px;  }
+	.tooltip.topRight .arrow  .arrow_in{ border-top: 10px solid #fff; left: -10px; bottom: -6px; }
+
+	.tooltip.topCenter .arrow {  border-top: 10px solid #E6F1F6; margin-left: 50%; left: -10px; bottom: -23px;  }
+	.tooltip.topCenter .arrow  .arrow_in{ border-top: 10px solid #fff; left: -10px; bottom: -6px; }
+
+	.tooltip.topLeft .arrow {  border-top: 10px solid #E6F1F6; right:20px; bottom: -23px;  }
+	.tooltip.topLeft .arrow  .arrow_in{ border-top: 10px solid #fff; left: -10px; bottom: -6px; }
+
+
+	/* left */
+	.tooltip.leftBottom .arrow {  border-left: 10px solid #E6F1F6; right: -23px; top: 20px;  }
+	.tooltip.leftBottom .arrow  .arrow_in{ border-left: 10px solid #fff; right: -6px; top: -10px; }
+
+	.tooltip.leftCenter .arrow {  border-left: 10px solid #E6F1F6; margin-top: 25%; right: -23px;top: -10px; }
+	.tooltip.leftCenter .arrow  .arrow_in{ border-left: 10px solid #fff; right: -6px; top: -10px;}
+
+	.tooltip.leftTop .arrow {  border-left: 10px solid #E6F1F6; right: -23px; bottom: 20px;  }
+	.tooltip.leftTop .arrow  .arrow_in{ border-left: 10px solid #fff; right: -6px; bottom: -10px; }
+
+	/* right */
+	.tooltip.rightBottom .arrow {  border-right: 10px solid #E6F1F6; left: -23px; top: 20px;  }
+	.tooltip.rightBottom .arrow  .arrow_in{ border-right: 10px solid #fff; left: -6px; top: -10px; }
+
+	.tooltip.rightCenter .arrow {  border-right: 10px solid #E6F1F6; margin-top: 25%; left: -23px;top: -10px; }
+	.tooltip.rightCenter .arrow  .arrow_in{ border-right: 10px solid #fff; left: -6px; top: -10px;}
+
+
+	.tooltip.rightTop .arrow {  border-right: 10px solid #E6F1F6; left: -23px; bottom: 20px;  }
+	.tooltip.rightTop .arrow  .arrow_in{ border-right: 10px solid #fff; left: -6px; bottom: -10px; }
+
+
+
+
+	</style>
+</head>
+<body>
+
+	<div class="wrapper">
+		<ul class="box_ul" >
+			<li><a href="javascript:;" id="trigger_1">bottomRight</a></li>
+			<li><a href="javascript:;" id="trigger_2">bottomCenter</a></li>
+			<li><a href="javascript:;" id="trigger_3">bottomLeft</a></li>
+			<li><a href="javascript:;" id="trigger_4">rightTop</a></li>
+			<li><a href="javascript:;" id="trigger_5">rightCenter</a></li>
+			<li><a href="javascript:;" id="trigger_6">rightBottom</a></li>
+			<li><a href="javascript:;" id="trigger_7">leftTop</a></li>
+			<li><a href="javascript:;" id="trigger_8">leftCenter</a></li>
+			<li><a href="javascript:;" id="trigger_9">leftBottom</a></li>
+			<li><a href="javascript:;" id="trigger_10">topRight</a></li>
+			<li><a href="javascript:;" id="trigger_11">topCenter</a></li>
+			<li><a href="javascript:;" id="trigger_12" >topLeft</a></li>
+		</ul>
+	</div>
+
+
+	<div class="float_layer" id="float_layer" >float layer</div>
+	
+
+	<script type="text/template" id="tooltip_template" >
+		<div class="tooltip">
+			<div class="content">
+					提示内容
+			</div>
+			<div class="arrow"><div class="arrow_in"></div></div>
+		</div>
+	</script>
+<script> 
+
+
+
+	function Piaofu(ele) {
+		var t = this;
+		t.obj = document.getElementById(ele);
+		t.xPos = 300;
+		t.yPos = 200; 
+		t.step = 2.1;
+		t.delay = 30; 
+		t.height = 0;
+		t.Hoffset = 0;
+		t.Woffset = 0;
+		t.yon = 0;
+		t.xon = 0;
+		t.pause = true;
+		t.interval = null;
+		
+		t.obj.style.top = t.yPos;
+		
+		t.obj.onmouseover=function(){
+			t.pause_resume();
+		} 
+		t.obj.onmouseout=function(){
+			t.pause_resume();
+		}
+
+		t.start = function() {
+			t.obj.visibility = "visible";
+			t.interval = setInterval(function() {
+				t.changePos();
+			}, t.delay);
+		}
+		t.close = function (){
+			t.obj.style.display = "none";
+			//clearInterval(t.interval);
+		}
+	}
+
+Piaofu.prototype.changePos = function() {
+
+	var t = this;
+	
+	t.width = document.documentElement.clientWidth;
+	t.height = document.documentElement.clientHeight;
+	t.Hoffset = t.obj.offsetHeight;
+	t.Woffset = t.obj.offsetWidth;
+	t.obj.style.left = (t.xPos + document.documentElement.scrollLeft) + 'px';
+	var ds = document.documentElement.scrollTop,
+		bs = document.body.scrollTop,
+		scrolltop = 0;
+		
+	if (ds != 0 || bs != 0) {
+		scrolltop = ds != 0 ? ds : bs;
+	}
+	t.obj.style.top = (t.yPos + scrolltop) + 'px';
+	
+	if (t.yon) 
+		{t.yPos = t.yPos + t.step;}
+	else 
+		{t.yPos = t.yPos - t.step;}
+	if (t.yPos < 0) 
+		{t.yon = 1;t.yPos = 0;}
+	if (t.yPos >= (t.height - t.Hoffset)) 
+		{t.yon = 0;t.yPos = (t.height - t.Hoffset);}
+	if (t.xon) 
+		{t.xPos = t.xPos + t.step;}
+	else 
+		{t.xPos = t.xPos - t.step;}
+	if (t.xPos < 0) 
+		{t.xon = 1;t.xPos = 0;}
+	if (t.xPos >= (t.width - t.Woffset)) 
+		{t.xon = 0;t.xPos = (t.width - t.Woffset);   }
+}
+
+Piaofu.prototype.pause_resume = function() {
+
+	var t = this;
+	
+	if(t.pause) 
+	{
+		clearInterval(t.interval);
+		t.pause = false;}
+	else 
+	{
+		t.interval = setInterval(function() {
+			t.changePos();
+		},t.delay);
+		
+		t.pause = true; 
+		}
+}
+
+	
+
+var piaofu = new Piaofu('float_layer');
+	piaofu.start();
+
+
+
+</script>
+
+
+	<script type="text/javascript">
+		$(function() {
+			
+		  $('#trigger_1').tooltip({
+		    template: "#tooltip_template",
+		    offset:[0,0],
+		    visible:true,
+		    arrowSize:10,
+		    position:'bottomRight'
+		  });
+
+
+		  $('#trigger_2').tooltip({
+		    template: "#tooltip_template",
+		    offset:[0,0],
+		    visible:true,
+		    arrowSize:10,
+		    position:'bottomCenter'
+		  });
+
+
+		  $('#trigger_3').tooltip({
+		    template: "#tooltip_template",
+		    offset:[0,0],
+		    visible:true,
+		    arrowSize:10,
+		    position:'bottomLeft'
+		  });
+
+		// ---------------------------- bottom
+
+		  $('#trigger_4').tooltip({
+		    template: "#tooltip_template",
+		    offset:[0,25], // offset
+		    visible:true,
+		    arrowSize:10,
+		    position:'rightTop'
+		  });
+
+		  $('#trigger_5').tooltip({
+		    template: "#tooltip_template",
+		    offset:[0,0],
+		    visible:true,
+		    arrowSize:10,
+		    position:'rightCenter'
+		  });
+
+
+		  $('#trigger_6').tooltip({
+		    template: "#tooltip_template",
+		    offset:[0,25], // offset 
+		    visible:true,
+		    arrowSize:10,
+		    position:'rightBottom'
+		  });
+
+		  //  ---------------------------- right 
+
+		  $('#trigger_7').tooltip({
+		    template: "#tooltip_template",
+		    offset:[0,25], // offset
+		    visible:true,
+		    arrowSize:10,
+		    position:'leftTop'
+		  });
+
+		  $('#trigger_8').tooltip({
+		    template: "#tooltip_template",
+		    offset:[0,0],
+		    visible:true,
+		    arrowSize:10,
+		    position:'leftCenter'
+		  });
+
+
+		  $('#trigger_9').tooltip({
+		    template: "#tooltip_template",
+		    offset:[0,25], // offset 
+		    visible:true,
+		    arrowSize:10,
+		    position:'leftBottom'
+		  });
+
+		  // ---------------------------- left
+
+		  $('#trigger_10').tooltip({
+		    template: "#tooltip_template",
+		    offset:[0,0],
+		    visible:true,
+		    arrowSize:10,
+		    position:'topRight'
+		  });
+
+
+		  $('#trigger_11').tooltip({
+		    template: "#tooltip_template",
+		    offset:[0,0],
+		    visible:true,
+		    arrowSize:10,
+		    position:'topCenter'
+		  });
+
+		  $('#trigger_12').tooltip({
+		    template: "#tooltip_template",
+		    offset:[0,0],
+		    visible:true,
+		    arrowSize:10,
+		    position:'topLeft'
+		  });
+		  // ------------------------- top
+
+		  $('#float_layer').tooltip({
+		    template: "#tooltip_template",
+		    offset:[0,0],
+		    visible:true,
+		    arrowSize:10,
+		    position:'auto'
+		  });
+
+
+		});
+	</script>
+
+</body>
+</html>

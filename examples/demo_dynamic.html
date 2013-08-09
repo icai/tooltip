@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>tooltip demo - dynamic </title>
+	<script src="../asset/jquery.min.js"></script>
+	<script src="../src/jquery.tooltip.js"></script>
+	<style>
+
+		@charset "utf-8";
+		/** css Reset  **/
+		html, body, div, span, applet, object, iframe,
+		h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+		a, abbr, acronym, address, big, cite, code,
+		del, dfn, em, img, ins, kbd, q, s, samp,
+		small, strike, strong, sub, sup, tt, var,
+		b, u, i, center,
+		dl, dt, dd, ol, ul, li,
+		fieldset, form, label, legend,
+		table, caption, tbody, tfoot, thead, tr, th, td,
+		article, aside, canvas, details, embed, 
+		figure, figcaption, footer, header, hgroup, 
+		menu, nav, output, ruby, section, summary,
+		time, mark, audio, video {
+		    margin: 0;
+		    padding: 0;
+		    border: 0;
+		    outline: 0;
+		    font-size: 100%;
+		    vertical-align: baseline;
+		    background: transparent;
+		}
+		article, aside, details, figcaption, figure, 
+		footer, header, hgroup, menu, nav, section {
+		    display: block;
+		}
+
+		ol, ul {list-style: none;}
+		blockquote, q {quotes: none;}
+		blockquote:before, blockquote:after,q:before, q:after { content: '';content: none;}
+
+
+		table {border-collapse: collapse; border-spacing: 0;}
+
+		i,em,b {font-style: normal;}
+		del {text-decoration: line-through;}
+		img {vertical-align: top;}
+		sup{vertical-align:text-top}
+		sub{vertical-align:text-bottom}
+		fieldset,img,a img,iframe{border-width:0;border-style:none}
+		iframe{overflow:hidden}
+		input,select {vertical-align: middle;}
+		pre {white-space: pre; white-space: pre-wrap;white-space: pre-line;word-wrap: break-word;}
+		hr{display: block;height: 1px;border: 0;border-top: 1px solid #ccc;margin: 1em 0;padding: 0;}
+		abbr[title],dfn[title] {border-bottom: 1px dotted #000;cursor: help;}
+
+		/** end css Reset **/
+
+
+
+	.wrapper{width:960px;margin:0 auto;}
+	.box_ul  li{ float: left; width: 320px; height:200px; text-align: center; vertical-align: middle; line-height: 200px; }
+	.box_ul  li a { border:1px solid #ccc; text-decoration: none; }
+
+	.float_layer { width:100px; height: 40px; background:#ccc; position: absolute; color:#DB5D16; }
+
+
+
+
+	.tooltip { position: absolute;  z-index: 100; width:200px; height:100px;background: #FFFFFF; border: 3px solid #E6F1F6; }
+	.tooltip .arrow,.tooltip .arrow  .arrow_in{ background-color: transparent; border: 10px dashed transparent;  position: absolute; font-size: 0; width: 0;}
+	.tooltip .content { text-align: center; line-height: 100px; color: #ccc; }
+
+
+	/*.tooltip { left:200px; top:200px; }*/
+
+	/* top */
+	.tooltip.bottomRight .arrow {  border-bottom: 10px solid #E6F1F6; left: 20px; top: -23px;  }
+	.tooltip.bottomRight .arrow  .arrow_in{ border-bottom: 10px solid #fff; left: -10px; top: -6px; }
+
+	.tooltip.bottomCenter .arrow {  border-bottom: 10px solid #E6F1F6; margin-left: 50%; left: -10px;top: -23px;  }
+	.tooltip.bottomCenter .arrow  .arrow_in{ border-bottom: 10px solid #fff; left: -10px; top: -6px; }
+
+	.tooltip.bottomLeft .arrow {  border-bottom: 10px solid #E6F1F6; right:20px; top: -23px;  }
+	.tooltip.bottomLeft .arrow  .arrow_in{ border-bottom: 10px solid #fff; left: -10px; top: -6px; }
+
+
+	/* bottom */
+	.tooltip.topRight .arrow {  border-top: 10px solid #E6F1F6; left: 20px; bottom: -23px;  }
+	.tooltip.topRight .arrow  .arrow_in{ border-top: 10px solid #fff; left: -10px; bottom: -6px; }
+
+	.tooltip.topCenter .arrow {  border-top: 10px solid #E6F1F6; margin-left: 50%; left: -10px; bottom: -23px;  }
+	.tooltip.topCenter .arrow  .arrow_in{ border-top: 10px solid #fff; left: -10px; bottom: -6px; }
+
+	.tooltip.topLeft .arrow {  border-top: 10px solid #E6F1F6; right:20px; bottom: -23px;  }
+	.tooltip.topLeft .arrow  .arrow_in{ border-top: 10px solid #fff; left: -10px; bottom: -6px; }
+
+
+	/* left */
+	.tooltip.leftBottom .arrow {  border-left: 10px solid #E6F1F6; right: -23px; top: 20px;  }
+	.tooltip.leftBottom .arrow  .arrow_in{ border-left: 10px solid #fff; right: -6px; top: -10px; }
+
+	.tooltip.leftCenter .arrow {  border-left: 10px solid #E6F1F6; margin-top: 25%; right: -23px;top: -10px; }
+	.tooltip.leftCenter .arrow  .arrow_in{ border-left: 10px solid #fff; right: -6px; top: -10px;}
+
+	.tooltip.leftTop .arrow {  border-left: 10px solid #E6F1F6; right: -23px; bottom: 20px;  }
+	.tooltip.leftTop .arrow  .arrow_in{ border-left: 10px solid #fff; right: -6px; bottom: -10px; }
+
+	/* right */
+	.tooltip.rightBottom .arrow {  border-right: 10px solid #E6F1F6; left: -23px; top: 20px;  }
+	.tooltip.rightBottom .arrow  .arrow_in{ border-right: 10px solid #fff; left: -6px; top: -10px; }
+
+	.tooltip.rightCenter .arrow {  border-right: 10px solid #E6F1F6; margin-top: 25%; left: -23px;top: -10px; }
+	.tooltip.rightCenter .arrow  .arrow_in{ border-right: 10px solid #fff; left: -6px; top: -10px;}
+
+
+	.tooltip.rightTop .arrow {  border-right: 10px solid #E6F1F6; left: -23px; bottom: 20px;  }
+	.tooltip.rightTop .arrow  .arrow_in{ border-right: 10px solid #fff; left: -6px; bottom: -10px; }
+
+
+
+
+	</style>
+</head>
+<body>
+
+	<div class="wrapper">
+		<ul class="box_ul">
+			<li><a href="javascript:;" class="dynamic">dynamic</a></li>
+			<li><a href="javascript:;" class="dynamic">dynamic</a></li>
+			<li><a href="javascript:;" class="dynamic">dynamic</a></li>
+			<li><a href="javascript:;" class="dynamic">dynamic</a></li>
+			<li><a href="javascript:;" class="dynamic">dynamic</a></li>
+			<li><a href="javascript:;" class="dynamic">dynamic</a></li>
+			<li><a href="javascript:;" class="dynamic">dynamic</a></li>
+			<li><a href="javascript:;" class="dynamic">dynamic</a></li>
+			<li><a href="javascript:;" class="dynamic">dynamic</a></li>
+			<li><a href="javascript:;" class="dynamic">dynamic</a></li>
+		</ul>
+	</div>
+	<script type="text/template" id="tooltip_template" >
+		<div class="tooltip">
+			<div class="content">
+					提示内容
+			</div>
+			<div class="arrow"><div class="arrow_in"></div></div>
+		</div>
+	</script>
+
+	<script type="text/javascript">
+
+
+
+		$(function() {
+			function adddynamic(){
+				$('.box_ul').append('<li><a href="javascript:;" class="dynamic">dynamic</a></li>');
+		   	}
+
+		   	function timeer(time){
+		   		adddynamic();
+		   		setTimeout(function(){
+		   			timeer(time)
+		   		},time)
+		   	}
+
+
+		   timeer(500);
+		  $('.box_ul').tooltip({
+		  	selector:'.dynamic',
+		    template: "#tooltip_template",
+		    offset:[0,25], // offset
+		    visible:true,
+		    arrowSize:10
+		  });
+
+
+
+
+		});
+	</script>
+
+</body>
+</html>
