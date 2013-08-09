@@ -1,7 +1,7 @@
-tooltip doc
+tooltip - jQuery plugin
 =======
 
-pop tips layer as title attribute which has 12 angles
+pop tips layer as title attribute which has 12 direction.
 
 
 

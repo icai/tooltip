@@ -1,14 +1,7 @@
 /**
  * Plugin: tooltip
  * Date：20130118~
- * Author:caiguangsong
- * Mail:gidcai#gmail.com
- * Last update:2013/02/28
- * 
- *  ~ 2013/02/18 : add option 'arrowSize'  && fixed 'leftBottom' miscalculation bug
- *  ~ 2013/02/28 : fix fast hover bug,when multi events binding
- *  ~ 2013/08/07 : fix some postion bugs
- *  ~ 2013/08/09 : fix some postion bugs and change litte api
+ * Mail:gidcai#gmail.com 
  */
 
 (function($, exports) {
