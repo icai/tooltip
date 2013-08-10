@@ -1,0 +1,201 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Tooltip - jQuery plugin by icai</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Tooltip - jQuery plugin</h1>
+        <p>pop tips layer as title attribute which has 12 direction. </p>
+
+        <p class="view"><a href="https://github.com/icai/tooltip">View the Project on GitHub <small>icai/tooltip</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/icai/tooltip/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/icai/tooltip/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/icai/tooltip">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h4>
+<a name="default-config" class="anchor" href="#default-config"><span class="octicon octicon-link"></span></a>default config：</h4>
+
+<pre><code>// default optss
+$.tooltip.defaults = {
+    template: undefined,
+    content: null,
+    loading:null,
+    trigger:'hover', // hover click
+    selector:false,
+    visible:false,
+           // when  the mouse leave the target , over the tips ,tips is visible ?
+    timeout: 0,
+    zIndex: 1990,
+    position:"auto",  // auto left top right bottom
+    appendTo:'body',
+    offset:[0,25], // [x,y]
+    arrowSize:6,
+    close: false, // close btn
+    center:false,
+    callback: function() {}
+};
+</code></pre>
+
+<h4>
+<a name="%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E" class="anchor" href="#%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E"><span class="octicon octicon-link"></span></a>参数说明：</h4>
+
+<table cellspacing="0">
+<thead><tr>
+<th width="14%">参数</th>
+        <th width="13%">默认值</th>
+        <th width="14%">类型</th>
+        <th width="59%">描述</th>
+      </tr></thead>
+<tbody>
+<tr>
+<td>template</td>
+        <td>undefined</td>
+        <td>String</td>        
+        <td>tip 层 模版 ，可以是 String 常量，也可以是 script 标签的id(#abcd),className(不推荐)，其他选择器</td>                    
+      </tr>
+<tr>
+<td>content</td>
+        <td>null</td>
+        <td>String,Function</td>        
+        <td>
+<p>当值设定为 String 时，则清空 [ data-tooltip="content" ]  内容区，并插入当前值，</p>
+        <p>当值设定为 Function 时，实现动态插入，调用this.insertContent()</p>
+        <div>
+        <pre>        content:function(){
+        var cnt = ' 1234';
+        var fn = this;
+          setTimeout(function(){
+              fn.insertContent(cnt);
+          },2000)
+        }</pre>
+        </div>
+        </td>                    
+      </tr>
+<tr>
+<td>loading</td>
+        <td>null</td>
+        <td>String,Boolean</td>        
+        <td>
+<p>当值设定为true 时，实现动态加载，并在内容区设定 [ data-tooltip="content" ]，和参数 'content'相互关联。</p>
+          <p>默认loading模版： &lt;p class="defalut_tooltip_loading"&gt;loading....&lt;/p&gt;</p>
+          <p>         </p>
+        <p>当值设定为 String 时，则覆盖默认的loading模版</p>
+</td>                    
+      </tr>
+<tr>
+<td>trigger</td>
+        <td>'hover'</td>
+        <td>String</td>        
+        <td>可选参数：‘click’</td>                    
+      </tr>
+<tr>
+<td>selector</td>
+        <td>false</td>
+        <td>Boolean</td>        
+        <td>selector 不等于false时，实现动态绑定：
+          <p>// 动态<br>
+            $(elem).tooltip({ <br>
+            selecotr:'.XXXX'<br>
+            })<br></p>
+          <p>//方法原理：<br>
+            $(elem).on(event,selector,function(){ // elem 静态元素<br>
+            // selector 动态元素<br>
+        })</p>
+</td>                    
+      </tr>
+<tr>
+<td>visible</td>
+        <td>false</td>
+        <td>Boolean</td>        
+        <td>当值设定为 true 时，鼠标能在tip层上停留，和参数 'trigger'相互关联</td>                    
+      </tr>
+<tr>
+<td>timeout</td>
+        <td>0</td>
+        <td>Number</td>        
+        <td>不可用</td>                    
+      </tr>
+<tr>
+<td>zIndex</td>
+        <td>1990</td>
+        <td>Number</td>        
+        <td>设定tip层的z-index 值</td>                    
+      </tr>
+<tr>
+<td>position</td>
+        <td>'auto'</td>
+        <td>String</td>        
+        <td>和参数 'center'相互关联，参考<a href="#pic_1">方向说明</a>图</td>                    
+      </tr>
+<tr>
+<td>center</td>
+        <td>false</td>
+        <td>Boolean</td>        
+        <td>和参数 'position'相互关联，参考<a href="#pic_1">方向说明</a>图</td>                            
+      </tr>
+<tr>
+<td>appendTo</td>
+        <td>'body'</td>
+        <td>String</td>        
+        <td>可选参数：‘after’，设置tip dom 元素追加到 body 或者 目标元素之后</td>                    
+      </tr>
+<tr>
+<td>offset</td>
+        <td>[0,25]</td>
+        <td>Array</td>        
+        <td>tip偏移微调，校正箭头对准目标元素,对应x,y</td>                    
+      </tr>
+<tr>
+<td>arrowSize</td>
+        <td>6</td>
+        <td>Number</td>        
+        <td>箭头的宽度或者高度，当箭头绝对定位于在tip 层外面（代码），不适用于最外层包裹（padding）</td>                    
+      </tr>
+<tr>
+<td>close</td>
+        <td>false</td>
+        <td>Boolean</td>        
+        <td>关闭按钮，事件绑定[ data-tooltip="close" ]</td>                    
+      </tr>
+<tr>
+<td>callback</td>
+        <td>function(){}</td>
+        <td>Function</td>        
+        <td>回调函数</td>                    
+      </tr>
+</tbody>
+</table><blockquote>
+</blockquote>
+
+<p>更多细节请参考示例</p>
+
+<h4>
+<a name="%E5%85%B6%E4%BB%96%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9" class="anchor" href="#%E5%85%B6%E4%BB%96%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="octicon octicon-link"></span></a>其他注意事项：</h4>
+
+<p>jQuery 1.7 +</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/icai">icai</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
