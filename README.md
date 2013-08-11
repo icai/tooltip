@@ -1,12 +1,15 @@
 tooltip - jQuery plugin
 =======
 
-#### direction： ####
+Tooltip(by icai)  is a  powerful pop tips layer which you can build  your custom theme and it has 12 direction for show.
 
-pop tips layer as title attribute which has 12 direction.
 
 #### other： ####
 
 More infomation read the doc dir.
+
+[doc here](https://github.com/icai/tooltip/blob/master/doc/doc.md)
+
+
 
 
