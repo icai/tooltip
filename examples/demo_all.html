@@ -5,6 +5,7 @@
 	<title>tooltip demo - all angles</title>
 	<script src="../asset/jquery.min.js"></script>
 	<script src="../src/jquery.tooltip.js"></script>
+	<link rel="stylesheet" href="css/tooltip.css">
 	<style>
 
 		@charset "utf-8";
@@ -66,60 +67,6 @@
 
 
 
-
-	.tooltip { position: absolute;  z-index: 100; width:200px; height:100px;background: #FFFFFF; border: 3px solid #E6F1F6; }
-	.tooltip .arrow,.tooltip .arrow  .arrow_in{ background-color: transparent; border: 10px dashed transparent;  position: absolute; font-size: 0; width: 0;}
-	.tooltip .content { text-align: center; line-height: 100px; color: #ccc; }
-
-
-	/*.tooltip { left:200px; top:200px; }*/
-
-	/* top */
-	.tooltip.bottomRight .arrow {  border-bottom: 10px solid #E6F1F6; left: 20px; top: -23px;  }
-	.tooltip.bottomRight .arrow  .arrow_in{ border-bottom: 10px solid #fff; left: -10px; top: -6px; }
-
-	.tooltip.bottomCenter .arrow {  border-bottom: 10px solid #E6F1F6; margin-left: 50%; left: -10px;top: -23px;  }
-	.tooltip.bottomCenter .arrow  .arrow_in{ border-bottom: 10px solid #fff; left: -10px; top: -6px; }
-
-	.tooltip.bottomLeft .arrow {  border-bottom: 10px solid #E6F1F6; right:20px; top: -23px;  }
-	.tooltip.bottomLeft .arrow  .arrow_in{ border-bottom: 10px solid #fff; left: -10px; top: -6px; }
-
-
-	/* bottom */
-	.tooltip.topRight .arrow {  border-top: 10px solid #E6F1F6; left: 20px; bottom: -23px;  }
-	.tooltip.topRight .arrow  .arrow_in{ border-top: 10px solid #fff; left: -10px; bottom: -6px; }
-
-	.tooltip.topCenter .arrow {  border-top: 10px solid #E6F1F6; margin-left: 50%; left: -10px; bottom: -23px;  }
-	.tooltip.topCenter .arrow  .arrow_in{ border-top: 10px solid #fff; left: -10px; bottom: -6px; }
-
-	.tooltip.topLeft .arrow {  border-top: 10px solid #E6F1F6; right:20px; bottom: -23px;  }
-	.tooltip.topLeft .arrow  .arrow_in{ border-top: 10px solid #fff; left: -10px; bottom: -6px; }
-
-
-	/* left */
-	.tooltip.leftBottom .arrow {  border-left: 10px solid #E6F1F6; right: -23px; top: 20px;  }
-	.tooltip.leftBottom .arrow  .arrow_in{ border-left: 10px solid #fff; right: -6px; top: -10px; }
-
-	.tooltip.leftCenter .arrow {  border-left: 10px solid #E6F1F6; margin-top: 25%; right: -23px;top: -10px; }
-	.tooltip.leftCenter .arrow  .arrow_in{ border-left: 10px solid #fff; right: -6px; top: -10px;}
-
-	.tooltip.leftTop .arrow {  border-left: 10px solid #E6F1F6; right: -23px; bottom: 20px;  }
-	.tooltip.leftTop .arrow  .arrow_in{ border-left: 10px solid #fff; right: -6px; bottom: -10px; }
-
-	/* right */
-	.tooltip.rightBottom .arrow {  border-right: 10px solid #E6F1F6; left: -23px; top: 20px;  }
-	.tooltip.rightBottom .arrow  .arrow_in{ border-right: 10px solid #fff; left: -6px; top: -10px; }
-
-	.tooltip.rightCenter .arrow {  border-right: 10px solid #E6F1F6; margin-top: 25%; left: -23px;top: -10px; }
-	.tooltip.rightCenter .arrow  .arrow_in{ border-right: 10px solid #fff; left: -6px; top: -10px;}
-
-
-	.tooltip.rightTop .arrow {  border-right: 10px solid #E6F1F6; left: -23px; bottom: 20px;  }
-	.tooltip.rightTop .arrow  .arrow_in{ border-right: 10px solid #fff; left: -6px; bottom: -10px; }
-
-
-
-
 	</style>
 </head>
 <body>
@@ -150,7 +97,7 @@
 			<div class="content">
 					提示内容
 			</div>
-			<div class="arrow"><div class="arrow_in"></div></div>
+			<div class="arrow" data-tooltip="arrow"><div class="arrow-in"></div></div>
 		</div>
 	</script>
 <script> 
@@ -265,6 +212,7 @@ var piaofu = new Piaofu('float_layer');
 		    offset:[0,0],
 		    visible:true,
 		    arrowSize:10,
+		    appendTo:'after',
 		    position:'bottomRight'
 		  });
 

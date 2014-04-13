@@ -1,126 +1,168 @@
 /**
  * Plugin: tooltip
  * Date：20130118~
- * Mail:gidcai#gmail.com 
+ * Author:caiguangsong
+ * Mail:gidcai#gmail.com
+ * Last update:2014/04/13
+ * 
+ *  ~ 2013/02/18 : add option 'arrowSize'  && fixed 'leftBottom' miscalculation bug
+ *  ~ 2013/02/28 : fix fast hover bug,when multi events binding
+ *  ~ 2013/08/07 : fix some postion bugs
+ *  ~ 2013/08/09 : fix some postion bugs and change litte api
+ *  ~ 2014/04/13 : reconstruct this
  */
+
+var Browser = {
+	isIE6: /MSIE\s*6\.\d+/i.test(navigator.userAgent)
+};
+
+(function($,window,undefined){
+	$.fn.extend({
+		getsPos: function() {
+			if (!this[0]) return null;
+			var a = $(this[0]).offset(),
+				b = a.top,
+				c = a.left,
+				d = b - $(window).scrollTop(),
+				e = c - $(window).scrollLeft(),
+				f = $(window).height(),
+				g = $(window).width(),
+				h = !1,
+				i = !1,
+				j = !1,
+				k = !1,
+				l = 0,
+				m = void 0;
+			return f / 2 - d > 0 ? h = !0 : i = !0, g / 2 - e > 0 ? j = !0 : k = !0, h && j && (l = 1, m = g / f > e / d ? "leftTop" : "topLeft"), h && k && (l = 2, m = g / f > (e - g / 2) / (f / 2 - d) ? "topRight" : "rightTop"), i && k && (l = 3, m = g / f > (e - g / 2) / (d - f / 2) ? "rightBottom" : "bottomRight"), i && j && (l = 4, m = g / f > e / (f - d) ? "bottomLeft" : "leftBottom"), {
+				sTop: d,
+				sLeft: e,
+				sWidth: g,
+				sHeight: f,
+				top: b,
+				left: c,
+				curPos: l,
+				angle: m
+			}
+		}
+	});
+})(jQuery,window);
 
 (function($, exports) {
 
-	var comPrefix = 'your_company';
+	var comPrefix = window.comPrefix || 'youcompany';
 
-	function isFunction(object) {
-		return Object.prototype.toString.call(object) === '[object Function]';
-	}
 	function throwError(msg) {
-		throw new Error(msg);
+		try{
+			console.info(msg)
+		}catch(e){}
 	}
+	Tooltip = function(id, opts) {
+		var opts = $.extend(true, {}, Tooltip.defaults, opts);
+		return new Tooltip.fn.initialize(id, opts);
+	};
 
-	$.fn.extend({getsPos:function(){if(!this[0])return null;var a=$(this[0]).offset(),b=a.top,c=a.left,d=b-$(window).scrollTop(),e=c-$(window).scrollLeft(),f=$(window).height(),g=$(window).width(),h=!1,i=!1,j=!1,k=!1,l=0,m=void 0;return f/2-d>0?h=!0:i=!0,g/2-e>0?j=!0:k=!0,h&&j&&(l=1,m=g/f>e/d?"leftTop":"topLeft"),h&&k&&(l=2,m=g/f>(e-g/2)/(f/2-d)?"topRight":"rightTop"),i&&k&&(l=3,m=g/f>(e-g/2)/(d-f/2)?"rightBottom":"bottomRight"),i&&j&&(l=4,m=g/f>e/(f-d)?"bottomLeft":"leftBottom"),{sTop:d,sLeft:e,sWidth:g,sHeight:f,top:b,left:c,curPos:l,angle:m}}});
-
-	$.tooltip = function(id, optss) {
-		return new $.tooltip.fn.init(id, optss);
-	}
-
-	$.tooltip.fn = $.tooltip.prototype = {
-		constructor: $.tooltip,
-		tooltipId: '',
-		isIe6:/MSIE 6\.\d+/i.test(navigator.userAgent),
-		loadingTmpl:'<p class="defalut_tooltip_loading">loading....</p>',
-		target:null,
-		_template:'', //  original templ
-		template:'', // jquery obj,
-		timeer:null,
-		otimeer:null,
-		vtimeer:null,
-		votimeer:null,
-		init: function(o, opts) {
-
-			this.options = {};
-
-			jQuery.extend(true, this.options, opts);
-			var fn = this;
+	Tooltip.fn = Tooltip.prototype = {
+		constructor: Tooltip,
+		initialize: function(o, opts) {
+			this.options = opts;
+			this.target = null;
+			this._template =''; //  original templ
+			this.template = '';  // jquery obj,
+			this.timeer = null;
+			this.otimeer = null;
+			this.vtimeer  = null;
+			this.votimeer = null;
+			this.tooltipId = '';
+			this.loadingTmpl = '<p class="tooltip-defalut-loading">loading...</p>';
 			var op = this.options;
-			if($(op.template).length && $(op.template)[0].nodeName.toLowerCase() == 'script'){
+			if($(op.template).closest('body').length){ // get form current page;;
 				op.template = $(op.template).html();
 			}
-
-			if($.type(op.offset) == 'number'){
+			if($.type(op.offset) == 'number'){// compatible older
 				 op.offset = [0,0];
 			}
-
 			this._template = op.template;
-
+			this.initEvent(o);
+		},
+		initEvent: function(o){
+			var me =  this;
+			var op = this.options;
 			if(op.trigger == 'hover'){
 				$(o).on('mouseenter',op.selector,function(){
-					
-					fn.selector(this);
-
+					me.setTarget(this);
 					clearTimeout($(this).data('votimeer')); // clear from tips out
 					var timeer = setTimeout(function(){
-						fn._init();
+						me.fireEvent();
 					},300);
 					$(this).data('timeer',timeer);
 				}).on('mouseleave',op.selector,function(){
 					clearTimeout($(this).data('timeer')); // clear fast hover  
 					var otimeer = setTimeout(function(){
-						fn.hide();
+						me.destroy();
 					},50)
 					$(this).data('otimeer',otimeer);
 				});
 			}else if(op.trigger == 'click'){
 				$(o).on('click',op.selector,function(){
-					fn.selector(this);
-					if($('#'+fn.tooltipId).is(':visible')){
-						fn.hide();
+					me.setTarget(this);
+					if(this.getDom().is(':visible')){
+						me.destroy();
 					}else{				
-						fn._init();
+						me.fireEvent();
 					}
 				})
 			}else{
 				throwError('evt "argument" setting error!');
 			}
-			return this;
 		},
-		selector:function(o){
-			
-			var fn = this;
+		fireEvent: function() {
+			var op = this.options;
+			this.getTemplate()
+				.beforeRender()
+				.render().setPosition()
+			    .afterRender();
+		},
+		setTarget:function(o){
 			var op = this.options;
 			var curId = comPrefix+"_ui_tooltip_" + (new Date).getTime();
-			if(fn.tooltipId != curId){ // fix fast hover bug
-				fn.hide(); 
+			if(this.tooltipId != curId){ // fix fast hover bug
+				this.destroy(); 
 			}
-			fn.tooltipId = curId;
-			op.template = fn._template;
-			fn.template = $(op.template).attr('id',curId);
-			fn.target = o;
-			// fn.timeer = null; // 优化 页面储存
-			// fn.otimeer = null;
-			// fn.vtimeer = null;
-			// fn.votimeer = null;
-			fn.hide();
+			this.tooltipId = curId;
+			op.template = this._template;
+			this.template = $(op.template).attr('id',curId);
+			this.target = o;
+			this.destroy();
 		},
-		_init: function() {
-			var op = this.options;
-
-			this.format().loading().show().position().bindEvent().content().callback();
-			// 插入内容，显示，定位，事件绑定，插入加载后的内容
+		getDom: function(){// tooltipId is dynamic
+			return $('#'+ this.tooltipId);
 		},
-		loading:function(){
-			var fn = this;
+		getTarget: function(){
+			if(this.options.selector){
+				return $(this.target);
+			}
+			if(this._$target)
+				return  this._$target;
+			else{
+				this._$target = $(this.target);
+				return this._$target;
+			}
+		},
+		beforeRender:function(){
 			var op = this.options;
 			if(op.loading){
 				if(typeof op.loading == 'boolean'){
-					fn.insertContent(fn.loadingTmpl);
+					this.insertContent(this.loadingTmpl);
 				}else{
-					fn.insertContent(op.loading);
+					this.insertContent(op.loading);
 				}
 			}
 			return this;
 		},
-		format: function() { // 格式化模板
+		getTemplate: function() {
 			var fn = this;
 			var op = this.options;
-			var contips = $(fn.target).data('tooltip');
+			var contips = this.getTarget().data('tooltip');
 			fn.insertContent(contips);
 			return this;
 		},
@@ -131,30 +173,58 @@
 			if(cnt == undefined){
 				return this;
 			}
-			if($('#'+fn.tooltipId).length){
-				$('#'+fn.tooltipId).find('[data-tooltip="content"]').empty().append(cnt);
+			if(this.getDom().length){
+				this.getDom().find('[data-tooltip="content"]').empty().append(cnt);
 			}else{
 				fn.template.find('[data-tooltip="content"]').empty().append(cnt);
 			}
 			return this;
 		},
-		content: function() { // API
+		afterRender: function(){
+			this.bindDomEvent();
+			this.setContent();
+			this.callback();
+		},
+		setContent: function() { // API
 			var fn = this;
 			var op = this.options;
 			var cnt;
-			if(isFunction(op.content)){
+			if($.isFunction(op.content)){
 				cnt = op.content.call(fn)
 			}
 			if(cnt){
 				fn.insertContent(cnt);
 			}
+		},
+		setPosition: function(){
+			if($.isFunction(this.options.position))
+				this.options.position.call(this,this.getDom(),this.getTarget())
+			else
+				this.setDynamicPos();
 			return this;
 		},
-		position:function(){
+		setDynamicPos: function(){
+			var params = this.getPositionOffset();
+			var offset = params.offset;
+			var bgiframe = '<iframe class="bgiframe" style="position: absolute; left: 0px; top: 0px;\
+							 filter: progid:dximagetransform.microsoft.alpha(opacity=0); z-index: -1; opacity: 0" \
+							 height="100%" frameborder=no width="100%"></iframe>';
+			this.getDom().css({
+				zIndex: this.options.zIndex,
+				position: "absolute"
+			}).css(offset).addClass(params.position);
+			var arrowObj = this.getDom().find('[data-tooltip="arrow"]');
+			if(arrowObj.length)
+				arrowObj.addClass(params.arrowClass);
+			else
+				this.getDom().addClass(params.arrowClass);
+			this.getDom().append(Browser.isIE6 ? bgiframe : '');
+		},
+		getPositionOffset:function(){
 			var fn = this;
 			var op = this.options;
 			var _position = null;
-			var getsP =  $(fn.target).getsPos();
+			var getsP =  this.getTarget().getsPos();
 			var tipsPos = { // screen -> tips
 				topLeft:'bottomRight',
 				leftTop:'rightBottom',
@@ -170,11 +240,12 @@
 			};
 
 			if(op.position == 'auto'){
-				_position = tipsPos[getsP.angle];
+				_position = tipsPos[getsP.angle]; // translate screen position to arrow position
 			}else{
 				_position = op.position;
 			}
-			if(op.position == 'auto' && op.center && /([a-z]+)[A-Z]([a-z]+)/.test(_position)){ // 四轮中心定位
+			// four  center  direction auto position
+			if(op.position == 'auto' && op.center && /([a-z]+)[A-Z]([a-z]+)/.test(_position)){ 
 				_position = RegExp.$1 + 'Center';
 			}
 			var tcs,pos,offset,actualSize,tarSize,arrow;
@@ -188,45 +259,44 @@
 				 	top:getsP.top
 				 };
 			}else if(op.appendTo == 'after'){
-				 pos = $(fn.target).position();
+				 pos = this.getTarget().position();
 				 offset = {
 				 	left:0,
 				 	top:0				 	
 				 }
 			}
 			actualSize = {
-				width:$('#' + fn.tooltipId).outerWidth(),
-				height:$('#' + fn.tooltipId).outerHeight()
+				width: this.getDom().outerWidth(),
+				height: this.getDom().outerHeight()
 			}; // tooltip  size
 
 			tarSize = {
-				width:$(fn.target).outerWidth(),
-				height:$(fn.target).outerHeight()
-			}; // 定位元素 size 
-
+				width:this.getTarget().outerWidth(),
+				height:this.getTarget().outerHeight()
+			}; // target size 
 			switch(_position){
 				case 'bottomLeft':
 					tcs = {
 						left:pos.left + offset.left + tarSize.width - actualSize.width + op.offset[0] ,
 						top:pos.top + offset.top + tarSize.height + op.arrowSize
 					}
-					arrow = 'arrow_top_right'; // bottomLeft
+					arrow = 'arrow-top-right'; // bottomLeft
 
 				break;	
 				case 'bottomRight':	
-					tcs = { //  放在下面
+					tcs = { 
 						left:pos.left + offset.left - op.offset[0],
 						top:pos.top + offset.top + tarSize.height + op.arrowSize  
 					}
-					arrow = 'arrow_top_left'; // bottomRight
+					arrow = 'arrow-top-left'; // bottomRight
 				break;
 				case 'bottom':	
 				case 'bottomCenter':
-					tcs = { //  放在下面 ok
+					tcs = {
 						left:pos.left + offset.left - 1/2 * (actualSize.width - tarSize.width),
 						top:pos.top + offset.top + tarSize.height  + op.arrowSize
 					}
-					arrow = 'arrow_top_center'; // bottomRight
+					arrow = 'arrow-top-center'; // bottomRight
 				break;
 				// ----------------------------------------------
 				case 'topLeft':
@@ -234,14 +304,14 @@
 						left:pos.left + offset.left + tarSize.width - actualSize.width + op.offset[0] ,
 						top:pos.top + offset.top - actualSize.height - op.arrowSize
 					}
-					arrow = 'arrow_bottom_right';// topLeft
+					arrow = 'arrow-bottom-right';// topLeft
 				break;	
 				case 'topRight':
 					tcs = {
 						left:pos.left + offset.left - op.offset[0],
 						top:pos.top + offset.top - actualSize.height - op.arrowSize
 					}
-					arrow = 'arrow_bottom_left'; // topRight
+					arrow = 'arrow-bottom-left'; // topRight
 
 				break;	
 				case 'top':
@@ -250,7 +320,7 @@
 						left:pos.left + offset.left - 1/2 * (actualSize.width - tarSize.width),
 						top:pos.top + offset.top  - actualSize.height - op.arrowSize 
 					}
-					arrow = 'arrow_bottom_center';// topLeft
+					arrow = 'arrow-bottom-center';// topLeft
 				break;
 
 				// ----------------------------------------------
@@ -260,14 +330,14 @@
 						left:pos.left + offset.left - actualSize.width - op.arrowSize,
 						top:pos.top + offset.top  + tarSize.height -  actualSize.height + op.offset[1] 
 					}
-					arrow = 'arrow_right_bottom'; // leftTop
+					arrow = 'arrow-right-bottom'; // leftTop
 				break;
 				case 'leftBottom':// 
 					tcs = {
 						left:pos.left + offset.left - actualSize.width - op.arrowSize,
 						top:pos.top + offset.top  - op.offset[1]
 					}
-					arrow = 'arrow_right_top'; // leftBottom
+					arrow = 'arrow-right-top'; // leftBottom
 				break;
 				case 'left':
 				case 'leftCenter':
@@ -275,7 +345,7 @@
 						left:pos.left + offset.left - actualSize.width - op.arrowSize,
 						top:pos.top + offset.top  - 1/2 * (actualSize.height - tarSize.height) 
 					}
-					arrow = 'arrow_right_center'; // leftTop
+					arrow = 'arrow-right-center'; // leftTop
 				break;
 				// ----------------------------------------------
 				case 'rightTop':
@@ -283,14 +353,14 @@
 						left:pos.left + offset.left + tarSize.width + op.arrowSize,
 						top:pos.top + offset.top  + tarSize.height  -  actualSize.height + op.offset[1]
 					}
-					arrow = 'arrow_left_bottom'; // rightTop
+					arrow = 'arrow-left-bottom'; // rightTop
 				break;
-				case 'rightBottom': // 元素在屏幕 左上方
-					tcs = { //  放在右面
+				case 'rightBottom': 
+					tcs = { 
 						left:pos.left + offset.left + tarSize.width + op.arrowSize ,
 						top:pos.top + offset.top - op.offset[1]
 					}
-					arrow = 'arrow_left_top'; // rightBottom
+					arrow = 'arrow-left-top'; // rightBottom
 				break;
 
 				case 'right':
@@ -299,107 +369,91 @@
 						left:pos.left + offset.left + tarSize.width + op.arrowSize,
 						top:pos.top + offset.top  - 1/2 * (actualSize.height - tarSize.height) 
 					}
-					arrow = 'arrow_left_center'; // rightTop
+					arrow = 'arrow-left-center'; // rightTop
 				break;
 				default:throwError(" argument 'position' error!");
-			}
-
-			this.setStyle(tcs,_position,arrow);
-			return this;
+			};
+			return {
+				offset: tcs,
+				position:_position,
+				arrowClass:arrow
+			};
 		},
-		setStyle: function(param,s,k) { //样式设定
-			var fn = this;
-			var ie6_iframe = '<iframe class="tooltip_iframe" style="position: absolute; left: 0px; filter: progid:dximagetransform.microsoft.alpha(opacity=0); z-index: -1; top: 0px; opacity: 0" height="100%" frameborder=no width="100%"></iframe>';
-
-			$('#'+fn.tooltipId).css($.extend({},{
-				zIndex: this.options.zIndex,
-				position: "absolute"
-			},param)).addClass(s).addClass(k).append(this.isIe6 ? ie6_iframe : '');
-
-			return this;
-		},
-		show: function() {
-			var fn = this;
+		render: function() {
 			var op = this.options;
 			if(op.appendTo == 'body'){
-				fn.template.appendTo('body');
+				this.template.appendTo('body');
 			}else if(op.appendTo == 'after'){
-				//$(fn.target).after(fn.template);
-				fn.template.insertAfter(fn.target);
+				this.template.insertAfter(this.getTarget());
 			}
 			return this;
 		},
-		hide: function() { // pass
-			var op = this.options;
-			if(op.selector){
+		destroy: function() { // pass
+			if(this.options.selector){
 				$('.tooltip').remove();
 			}
-			$('#' + this.tooltipId).remove();
+			this.getDom().remove();
 			return this;
 		},
-		bindEvent: function() { //pass
-			var fn = this;
-			var op = this.options;
-			var that = $('#' + fn.tooltipId);
-			if(op.visible){
-				that.on('mouseenter',function(){
-					clearTimeout($(fn.target).data('otimeer'));  // clear out form target
-					clearTimeout($(fn.target).data('votimeer'));  // clear out come back
+		bindDomEvent: function() { //pass
+			var me = this;
+			if(this.options.visible){
+				this.getDom().on('mouseenter',function(){
+					clearTimeout(me.getTarget().data('otimeer'));  // clear out form target
+					clearTimeout(me.getTarget().data('votimeer'));  // clear out come back
 				}).on('mouseleave',function(){
-					clearTimeout($(fn.target).data('votimeer')); 
+					clearTimeout(me.getTarget().data('votimeer')); 
 					var votimeer = setTimeout(function(){
-						fn.hide();
+						me.destroy();
 					},300)
-					$(fn.target).data('votimeer',votimeer);
+					me.getTarget().data('votimeer',votimeer);
 				})
 			}
-			if(op.close) {
-				that.find('[data-tooltip="close"]').bind('click', function() {
-					fn.hide();
+			if(this.options.close) {
+				this.getDom().find('[data-tooltip="close"]').bind('click', function() {
+					me.destroy();
 				});
 			}
-
-			return this;
 		},
 		callback:function(){
-			var fn = this;
-			var op = this.options;
-			op.callback.call(fn);
-			return this;		
+			this.options.callback.call(this,this.getPositionOffset());	
 		}
 	}
 
-	$.tooltip.fn.init.prototype = $.tooltip.fn;
+	Tooltip.fn.initialize.prototype = Tooltip.fn;
 
-	$.fn.tooltip = function(optss) {
-
-		var opts = $.extend(true, {}, $.tooltip.defaults, optss);
-
-		if(!this.length) {
-			return this;
-		}
-		this.each(function() {
-			$.tooltip(this, opts);
-		});
-
-		return this;
-	};
-	// default optss
-	$.tooltip.defaults = {
+	// default opts
+	Tooltip.defaults = {
 		template: undefined,
-		content: null,
-		loading:null,
+		content: undefined,
+		loading: undefined,
 		trigger:'hover', // hover click
 		selector:false,
 		visible:false, // when  the mouse leave the target , over the tips ,tips is visible ?
 		timeout: 0,
 		zIndex: 1990,
-		position:"auto",  // auto left top right bottom
-		appendTo:'body',
+		position:"auto",  // auto left top right bottom function(){};
+		appendTo:'body', // || 'after'
 		offset:[0,25], // [x,y]
 		arrowSize:6,
 		close: false, // close btn
 		center:false,
 		callback: function() {}
+	};
+
+
+	// import api
+	$.tooltip = function(dom,opts){
+		return new Tooltip(dom,opts)
+	};
+
+	$.fn.tooltip = function(opts) {
+		if(!this.length) {
+			return this;
+		}
+		this.each(function() {
+			new Tooltip(this, opts);
+		});
+		return this;
 	};
 })(jQuery, this);
