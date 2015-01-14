@@ -1,0 +1,29 @@
+// Details: https://github.com/victorporof/Sublime-JSHint#using-your-own-jshintrc-options
+// Example: https://github.com/jshint/jshint/blob/master/examples/.jshintrc
+// Documentation: http://www.jshint.com/docs/options/
+
+{
+    "asi": true,
+    "browser": true,
+    "eqeqeq": false,
+    "eqnull": true,
+    "es3": true,
+    "expr": true,
+    "evil": true,
+    "jquery": true,
+    "latedef": true,
+    "laxbreak": true,
+    "nonbsp": true,
+    "strict": false,
+    "undef": true,
+    "unused": true,
+    "quotmark": false,
+    "multistr": true,
+    "devel": true,
+    "globals": {
+        "chrome": true,
+        "$": true,
+        "_": true
+    }
+
+}

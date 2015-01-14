@@ -61,6 +61,22 @@ abbr[title],dfn[title] {border-bottom: 1px dotted #000;cursor: help;}
 .box_ul  li{ float: left; width: 320px; height:200px; text-align: center; vertical-align: middle; line-height: 200px; }
 .box_ul  li a { border:1px solid #ccc; text-decoration: none; }
 
+.clearfix:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+.clearfix {
+    display: inline-block;
+}
+
+.clearfix {
+    display: block;
+}
+
 
 </style>
 <link rel="stylesheet" href="css/tooltip.css">
@@ -72,19 +88,23 @@ abbr[title],dfn[title] {border-bottom: 1px dotted #000;cursor: help;}
 
 
 
-<div class="wrapper">
+<div class="wrapper clearfix" style="position: relative;margin-top: 120px;">
   <ul class="box_ul">
     <li><a href="javascript:;" id="dynamic_demo1">示例1</a></li>
     <li><a href="javascript:;" id="dynamic_demo2">示例2</a></li>
     <li><a href="javascript:;" id="dynamic_demo3">示例3</a></li>
     <li><a href="javascript:;" id="dynamic_demo4">示例4</a></li>
     <li><a href="javascript:;" id="dynamic_demo5">示例5</a></li>
-    <li><a href="javascript:;" id="dynamic_demo6">示例6</a></li>
+    <li><a href="javascript:;" id="dynamic_demo6">示例6, margin</a></li>
+    <li><a href="javascript:;" id="dynamic_demo6x">示例6x margin</a></li>
     <li><a href="javascript:;" id="dynamic_demo7">示例7</a></li>
     <li><a href="javascript:;" id="dynamic_demo8">示例8</a></li>
     <li><a href="javascript:;" id="dynamic_demo9">示例9</a></li>
     <li><a href="javascript:;" id="dynamic_demo10">示例10</a></li>
   </ul>
+</div>
+<div id="box2" style="position: relative;">
+  
 </div>
 
 
@@ -155,8 +175,18 @@ var douban2 = '<div class="detail-tip shadow-right" style="left: 835px; top: 399
     offset:[40,0],
     visible:true,
     position:'topLeft',
-    appendTo:'after'
+    appendTo:'.wrapper'
   });
+
+
+  $('#dynamic_demo6x').tooltip({
+    template:hotelstyle,
+    offset:[40,0],
+    visible:true,
+    position:'topLeft',
+    appendTo:'#box2'
+  });
+
 
   $('#dynamic_demo7').tooltip({
     template:vancltempl,

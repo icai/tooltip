@@ -10,6 +10,8 @@
  *  ~ 2013/08/07 : fix some postion bugs
  *  ~ 2013/08/09 : fix some postion bugs and change litte api
  *  ~ 2014/04/13 : reconstruct this
+ *
+ *  notice: current donot support margin element calculate, you can use boostrap tooltip 
  */
 
 var Browser = {
@@ -54,10 +56,10 @@ var Browser = {
 	function throwError(msg) {
 		try{
 			console.info(msg)
-		}catch(e){}
+		}catch(e){} 
 	}
-	Tooltip = function(id, opts) {
-		var opts = $.extend(true, {}, Tooltip.defaults, opts);
+	var Tooltip = function(id, opts) {
+		opts = $.extend(true, {}, Tooltip.defaults, opts);
 		return new Tooltip.fn.initialize(id, opts);
 	};
 
@@ -116,7 +118,6 @@ var Browser = {
 			}
 		},
 		fireEvent: function() {
-			var op = this.options;
 			this.getTemplate()
 				.beforeRender()
 				.render().setPosition()
@@ -124,7 +125,7 @@ var Browser = {
 		},
 		setTarget:function(o){
 			var op = this.options;
-			var curId = comPrefix+"_ui_tooltip_" + (new Date).getTime();
+			var curId = comPrefix+"_ui_tooltip_" + new Date().getTime();
 			if(this.tooltipId != curId){ // fix fast hover bug
 				this.destroy(); 
 			}
@@ -161,16 +162,13 @@ var Browser = {
 		},
 		getTemplate: function() {
 			var fn = this;
-			var op = this.options;
 			var contips = this.getTarget().data('tooltip');
 			fn.insertContent(contips);
 			return this;
 		},
 		insertContent:function(cnt){
 			var fn = this;
-			var op = this.options;
-
-			if(cnt == undefined){
+			if(cnt === undefined){
 				return this;
 			}
 			if(this.getDom().length){
@@ -198,10 +196,28 @@ var Browser = {
 		},
 		setPosition: function(){
 			if($.isFunction(this.options.position))
-				this.options.position.call(this,this.getDom(),this.getTarget())
+				this.options.position.call(this, this.getDom(), this.getTarget())
 			else
 				this.setDynamicPos();
 			return this;
+		},
+		_getPosition : function ($element) { // steal from bs
+		    //$element   = $element || this.$element
+		    //
+		    window._getPosition = this._getPosition;
+
+		    var el     = $element[0]
+		    var isBody = el.tagName == 'BODY'
+
+		    var elRect    = el.getBoundingClientRect()
+		    if (elRect.width == null) {
+		      elRect = $.extend({}, elRect, { width: elRect.right - elRect.left, height: elRect.bottom - elRect.top })
+		    }
+		    var elOffset  = isBody ? { top: 0, left: 0 } : $element.offset()
+		    var scroll    = { scroll: isBody ? document.documentElement.scrollTop || document.body.scrollTop : $element.scrollTop() }
+		    var outerDims = isBody ? { width: $(window).width(), height: $(window).height() } : null
+
+		    return $.extend({}, elRect, scroll, outerDims, elOffset)
 		},
 		setDynamicPos: function(){
 			var params = this.getPositionOffset();
@@ -221,7 +237,6 @@ var Browser = {
 			this.getDom().append(Browser.isIE6 ? bgiframe : '');
 		},
 		getPositionOffset:function(){
-			var fn = this;
 			var op = this.options;
 			var _position = null;
 			var getsP =  this.getTarget().getsPos();
@@ -248,8 +263,8 @@ var Browser = {
 			if(op.position == 'auto' && op.center && /([a-z]+)[A-Z]([a-z]+)/.test(_position)){ 
 				_position = RegExp.$1 + 'Center';
 			}
-			var tcs,pos,offset,actualSize,tarSize,arrow;
-			if(op.appendTo == 'body'){
+			var tcs,pos,offset,actualSize,tarSize,arrow, container;
+			if(op.appendTo){
 				 pos = {
 				 	left:0,
 				 	top:0
@@ -258,22 +273,28 @@ var Browser = {
 				 	left:getsP.left,
 				 	top:getsP.top
 				 };
-			}else if(op.appendTo == 'after'){
+			} else {
 				 pos = this.getTarget().position();
 				 offset = {
 				 	left:0,
 				 	top:0				 	
 				 }
 			}
-			actualSize = {
-				width: this.getDom().outerWidth(),
-				height: this.getDom().outerHeight()
-			}; // tooltip  size
 
-			tarSize = {
-				width:this.getTarget().outerWidth(),
-				height:this.getTarget().outerHeight()
-			}; // target size 
+			actualSize = this._getPosition(this.getDom());
+
+			//  {
+			// 	width: this.getDom().outerWidth(),
+			// 	height: this.getDom().outerHeight()
+			// }; // tooltip  size
+
+			tarSize = this._getPosition(this.getTarget()); 
+			//console.info(actualSize, tarSize);
+
+			// {
+			// 	width:this.getTarget().outerWidth(),
+			// 	height:this.getTarget().outerHeight()
+			// }; // target size 
 			switch(_position){
 				case 'bottomLeft':
 					tcs = {
@@ -372,7 +393,7 @@ var Browser = {
 					arrow = 'arrow-left-center'; // rightTop
 				break;
 				default:throwError(" argument 'position' error!");
-			};
+			}
 			return {
 				offset: tcs,
 				position:_position,
@@ -380,12 +401,13 @@ var Browser = {
 			};
 		},
 		render: function() {
-			var op = this.options;
-			if(op.appendTo == 'body'){
-				this.template.appendTo('body');
-			}else if(op.appendTo == 'after'){
-				this.template.insertAfter(this.getTarget());
+			if(this.options.appendTo === 'after'){ // old logic
+				this.options.appendTo = '';
 			}
+
+			this.options.appendTo ? 
+				this.template.appendTo(this.options.appendTo) : 
+				this.template.insertAfter(this.getTarget());
 			return this;
 		},
 		destroy: function() { // pass
@@ -442,11 +464,8 @@ var Browser = {
 	};
 
 
-	// import api
-	$.tooltip = function(dom,opts){
-		return new Tooltip(dom,opts)
-	};
 
+	var old = $.fn.tooltip;
 	$.fn.tooltip = function(opts) {
 		if(!this.length) {
 			return this;
@@ -456,4 +475,10 @@ var Browser = {
 		});
 		return this;
 	};
-})(jQuery, this);
+
+	$.fn.tooltip.noConflict = function () {
+		$.fn.tooltip = old
+		return this
+	}
+
+})(jQuery, window);
